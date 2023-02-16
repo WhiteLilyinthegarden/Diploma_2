@@ -6,6 +6,8 @@ import user.RestClient;
 
 import static io.restassured.RestAssured.given;
 public class OrderRequests extends RestClient {
+    public static final String POST_AND_GET_ORDER = "/api/orders";
+    public static final String GET_INGREDIENT = "/api/ingredients";
 
     @Step("Get order of authorized user")
     public ValidatableResponse getOrderWithLogin(String accessToken) {
@@ -13,7 +15,7 @@ public class OrderRequests extends RestClient {
                 .spec(getBaseSpec())
                 .header("Authorization", accessToken)
                 .when()
-                .get("/api/orders")
+                .get(POST_AND_GET_ORDER)
                 .then();
     }
     @Step("Get order without authorized user")
@@ -21,7 +23,7 @@ public class OrderRequests extends RestClient {
         return given()
                 .spec(getBaseSpec())
                 .when()
-                .get("/api/orders")
+                .get(POST_AND_GET_ORDER)
                 .then();
     }
 
@@ -32,7 +34,7 @@ public class OrderRequests extends RestClient {
                 .spec(getBaseSpec())
                 .body(ingredientsJson)
                 .when()
-                .post("/api/orders")
+                .post(POST_AND_GET_ORDER)
                 .then();
     }
 
@@ -43,7 +45,7 @@ public class OrderRequests extends RestClient {
                 .header("Authorization", accessToken)
                 .body(ingredientsJson)
                 .when()
-                .post("/api/orders")
+                .post(POST_AND_GET_ORDER).prettyPeek()
                 .then();
     }
 
@@ -52,7 +54,7 @@ public class OrderRequests extends RestClient {
         return given()
                 .spec(getBaseSpec())
                 .when()
-                .post("/api/orders")
+                .post(POST_AND_GET_ORDER)
                 .then();
     }
 
@@ -61,7 +63,7 @@ public class OrderRequests extends RestClient {
         return given()
                 .spec(getBaseSpec())
                 .when()
-                .get("/api/ingredients")
+                .get(GET_INGREDIENT)
                 .then();
     }
 

@@ -6,31 +6,26 @@ import io.restassured.response.ValidatableResponse;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import user.CreateUser;
-import user.LoginUser;
+import user.User;
 import user.UserRequests;
-
 import java.util.ArrayList;
 import java.util.Collections;
-
 import static org.junit.Assert.*;
 import static org.apache.http.HttpStatus.*;
 
 public class GetOrderUserTest {
     private static UserRequests userRequests;
-
+    static User user = new User().generateUserEmail();
     @BeforeClass
     public static void setUp() {
         userRequests = new UserRequests();
-        CreateUser createUser = new CreateUser("yellow_ferra@mail.ru", "P@ssword", "Lily");
-        userRequests.create(createUser);
+        userRequests.create(user);
     }
     @Test
     @DisplayName("Get order of authorized user")
     @Description("Sent get request to /api/orders, expected status code 200 ok")
     public void getOrderListWithAuth() {
-        LoginUser loginUser = new LoginUser("yellow_ferra@mail.ru", "P@ssword");
-        ValidatableResponse response = userRequests.login(loginUser);
+        ValidatableResponse response = userRequests.login(user);
         String accessToken = response.extract().path("accessToken");
         OrderRequests orderRequests = new OrderRequests();
 
@@ -60,8 +55,8 @@ public class GetOrderUserTest {
     }
     @AfterClass
     public static void tearDown() {
-        LoginUser loginUser = new LoginUser("yellow_ferra@mail.ru", "P@ssword");
-        ValidatableResponse response = userRequests.login(loginUser);
+
+        ValidatableResponse response = userRequests.login(user);
         String accessToken = response.extract().path("accessToken");
         userRequests.delete(accessToken);
     }

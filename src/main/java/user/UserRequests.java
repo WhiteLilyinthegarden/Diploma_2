@@ -2,26 +2,28 @@ package user;
 
 import io.qameta.allure.Step;
 import io.restassured.response.ValidatableResponse;
-
 import static io.restassured.RestAssured.given;
 
 public class UserRequests extends RestClient {
+
+    public static final String USER_REGISTER =  "/api/auth/register";
+    public static final String USER_LOGIN =  "/api/auth/login";
+    public static final String USER_DELETE_AND_PATCH = "/api/auth/user";
     @Step("Create user")
-    public ValidatableResponse create(CreateUser createUser) {
+    public ValidatableResponse create(User user) {
         return given()
                 .spec(getBaseSpec())
-                .body(createUser)
+                .body(user)
                 .when()
-                .post("/api/auth/register")
+                .post(USER_REGISTER).prettyPeek()
                 .then();
-
     }
     @Step("User login")
-    public ValidatableResponse login(LoginUser loginUser) {
+    public ValidatableResponse login(User User) {
         return given()
                 .spec(getBaseSpec())
-                .body(loginUser)
-                .post("/api/auth/login")
+                .body(User)
+                .post(USER_LOGIN).prettyPeek()
                 .then();
     }
     @Step("Delete user")
@@ -30,45 +32,27 @@ public class UserRequests extends RestClient {
                 .spec(getBaseSpec())
                 .header("Authorization", accessToken)
                 .when()
-                .delete("/api/auth/user")
+                .delete(USER_DELETE_AND_PATCH)
                 .then();
     }
     @Step("Update user email")
-    public ValidatableResponse updateEmail(String accessToken, UpdateUserEmail updateUserEmail) {
+    public ValidatableResponse updateEmail(String accessToken, User updateUserEmail22) {
         return given()
                 .spec(getBaseSpec())
                 .header("Authorization", accessToken)
-                .body(updateUserEmail)
+                .body(updateUserEmail22)
                 .when()
-                .patch("/api/auth/user")
+                .patch(USER_DELETE_AND_PATCH).prettyPeek()
                 .then();
     }
     @Step("Update user name")
-    public ValidatableResponse updateName(String accessToken, UpdateUserName updateUserName) {
+    public ValidatableResponse updateUserInfo(String accessToken, User user) {
         return given()
                 .spec(getBaseSpec())
                 .header("Authorization", accessToken)
-                .body(updateUserName)
+                .body(user)
                 .when()
-                .patch("/api/auth/user")
-                .then();
-    }
-    @Step("Update unauthorized user name")
-    public ValidatableResponse updateNameWithoutToken(UpdateUserName updateUserName) {
-        return given()
-                .spec(getBaseSpec())
-                .body(updateUserName)
-                .when()
-                .patch("/api/auth/user")
-                .then();
-    }
-    @Step("Update unauthorized user email")
-    public ValidatableResponse updateEmailWithoutToken(UpdateUserEmail updateUserEmail) {
-        return given()
-                .spec(getBaseSpec())
-                .body(updateUserEmail)
-                .when()
-                .patch("/api/auth/user")
+                .patch(USER_DELETE_AND_PATCH)
                 .then();
     }
 }

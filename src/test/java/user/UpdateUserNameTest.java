@@ -1,43 +1,30 @@
 package user;
-
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.ValidatableResponse;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-
 import static org.junit.Assert.*;
 import static org.apache.http.HttpStatus.*;
 public class UpdateUserNameTest {
     private UserRequests userRequests;
-    @Before
-    public void setUp() {
-        userRequests = new UserRequests();
-        CreateUser createUser = new CreateUser("yellow_ferra@mail.ru", "P@ssword", "Lily");
-        userRequests.create(createUser);
-    }
+
     @Test
     @DisplayName("Update user name")
     @Description("Send post request to /api/auth/user, expected status code  200 ok")
     public void changeUserName() {
-        LoginUser loginUser = new LoginUser("yellow_ferra@mail.ru", "P@ssword");
-        ValidatableResponse response = userRequests.login(loginUser);
-        String accessToken = response.extract().path("accessToken");
-
-        UpdateUserName updateUserName = new UpdateUserName("Lilu");
-        ValidatableResponse response1 = userRequests.updateName(accessToken, updateUserName);
+        userRequests = new UserRequests();
+        User user = new User().generateUserEmail();
+        userRequests.create(user);
+        String newName = "newName";
+        String accessToken = userRequests.login(user).extract().path("accessToken");
+        ValidatableResponse response1 = userRequests.updateUserInfo(accessToken, user.setName(newName));
         boolean result = response1.extract().path("success");
         assertTrue(result);
         int statusCode = response1.extract().statusCode();
         assertEquals(SC_OK, statusCode);
-    }
 
-    @After
-    public void tearDown() {
-        LoginUser loginUser = new LoginUser("yellow_ferra@mail.ru", "P@ssword");
-        ValidatableResponse response = userRequests.login(loginUser);
-        String accessToken = response.extract().path("accessToken");
-        userRequests.delete(accessToken);
+        ValidatableResponse response2 = userRequests.login(user);
+        String accessToken2 = response2.extract().path("accessToken");
+        userRequests.delete(accessToken2);
     }
 }

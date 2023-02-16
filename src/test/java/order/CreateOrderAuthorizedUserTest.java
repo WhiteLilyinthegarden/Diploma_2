@@ -7,8 +7,7 @@ import io.restassured.response.ValidatableResponse;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import user.CreateUser;
-import user.LoginUser;
+import user.User;
 import user.UserRequests;
 
 
@@ -17,19 +16,19 @@ import static org.junit.Assert.*;
 
 public class CreateOrderAuthorizedUserTest {
     private static UserRequests userRequests;
-
+    static User user = new User().generateUserEmail();
     @BeforeClass
     public static void setUp() {
         userRequests = new UserRequests();
-        CreateUser createUser = new CreateUser("yellow_ferra@mail.ru", "P@ssword", "Lily");
-        userRequests.create(createUser);
+        userRequests.create(user);
     }
     @Test
     @DisplayName("Create order with login")
     @Description("Send post request to /api/orders, expected status code 200 ok")
     public void createOrderWithAuthorizedUser() {
-        LoginUser loginUser = new LoginUser("yellow_ferra@mail.ru", "P@ssword");
-        ValidatableResponse response = userRequests.login(loginUser);
+
+
+        ValidatableResponse response = userRequests.login(user);
         String accessToken = response.extract().path("accessToken");
 
         OrderRequests orderRequests = new OrderRequests();
@@ -47,12 +46,10 @@ public class CreateOrderAuthorizedUserTest {
     @DisplayName("Create order without ingredients")
     @Description("Send post request to /api/orders, expected status code 400 bad request")
     public void createOrderWithoutIngredients() {
-        LoginUser loginUser = new LoginUser("yellow_ferra@mail.ru", "P@ssword");
-        ValidatableResponse response = userRequests.login(loginUser);
+        ValidatableResponse response = userRequests.login(user);
         String accessToken = response.extract().path("accessToken");
 
         OrderRequests orderRequests = new OrderRequests();
-
         IngredientsJson ingredientsJson = new IngredientsJson();
 
         ValidatableResponse response2 = orderRequests.createOrder(accessToken, ingredientsJson);
@@ -65,8 +62,7 @@ public class CreateOrderAuthorizedUserTest {
     @DisplayName("Create order with invalid ingredient hash")
     @Description("Send post request to /api/orders, expected status code 500 internal server error")
     public void createOrderWithInvalidIngredientHash() {
-        LoginUser loginUser = new LoginUser("yellow_ferra@mail.ru", "P@ssword");
-        ValidatableResponse response = userRequests.login(loginUser);
+        ValidatableResponse response = userRequests.login(user);
         String accessToken = response.extract().path("accessToken");
 
         OrderRequests orderRequests = new OrderRequests();
@@ -79,8 +75,7 @@ public class CreateOrderAuthorizedUserTest {
     }
     @AfterClass
     public static void tearDown() {
-        LoginUser loginUser = new LoginUser("yellow_ferra@mail.ru", "P@ssword");
-        ValidatableResponse response = userRequests.login(loginUser);
+        ValidatableResponse response = userRequests.login(user);
         String accessToken = response.extract().path("accessToken");
         userRequests.delete(accessToken);
     }

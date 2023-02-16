@@ -12,22 +12,24 @@ import static org.apache.http.HttpStatus.*;
 
 public class UpdateUserEmailSuccessfullyTest {
     private UserRequests userRequests;
+    User user = new User().generateUserEmail();
+
     @Before
     public void setUp() {
         userRequests = new UserRequests();
-        CreateUser createUser = new CreateUser("yellow_ferra@mail.ru", "P@ssword", "Lily");
-        userRequests.create(createUser);
+        userRequests.create(user);
+
     }
+
     @Test
     @DisplayName("Update user email")
     @Description("Send post request to /api/auth/uer, expected status code 200 ok")
     public void changeUserEmail() {
-        LoginUser loginUser = new LoginUser("yellow_ferra@mail.ru", "P@ssword");
-        ValidatableResponse response = userRequests.login(loginUser);
-        String accessToken = response.extract().path("accessToken");
-        UpdateUserEmail updateUserEmail = new UpdateUserEmail("research_java00@mail.ru");
-        ValidatableResponse response1 = userRequests.updateEmail(accessToken, updateUserEmail);
 
+        ValidatableResponse response = userRequests.login(user);
+        String accessToken = response.extract().path("accessToken");
+
+        ValidatableResponse response1 = userRequests.updateEmail(accessToken, user.generateUserEmail());
         boolean result = response1.extract().path("success");
         assertTrue(result);
         int statusCode = response1.extract().statusCode();
@@ -36,8 +38,7 @@ public class UpdateUserEmailSuccessfullyTest {
 
     @After
     public void tearDown() {
-        LoginUser loginUser = new LoginUser("research_java00@mail.ru", "P@ssword");
-        ValidatableResponse response = userRequests.login(loginUser);
+        ValidatableResponse response = userRequests.login(user);
         String accessToken = response.extract().path("accessToken");
         userRequests.delete(accessToken);
     }
