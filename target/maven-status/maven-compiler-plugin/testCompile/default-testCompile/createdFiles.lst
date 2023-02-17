@@ -1,0 +1,10 @@
+user\UpdateUserEmailSuccessfullyTest.class
+order\CreateOrderAuthorizedUserTest.class
+user\UpdateUnauthorizedUserTest.class
+user\UpdateUserNameTest.class
+user\UpdateExistingUserEmailTest.class
+user\CreateUserSuccessfullyTest.class
+order\GetOrderUserTest.class
+user\LoginUserTest.class
+order\CreateOrderUnauthorizedUserTest.class
+user\CreateUserUnhappyPathTest.class
